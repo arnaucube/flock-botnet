@@ -1,0 +1,22 @@
+[{
+        "title": "account1",
+        "consumer_key": "xxxxxxxxxxxxx",
+        "consumer_secret": "xxxxxxxxxxxxx",
+        "access_token_key": "xxxxxxxxxxxxx",
+        "access_token_secret": "xxxxxxxxxxxxx"
+    },
+    {
+        "title": "account2",
+        "consumer_key": "xxxxxxxxxxxxx",
+        "consumer_secret": "xxxxxxxxxxxxx",
+        "access_token_key": "xxxxxxxxxxxxx",
+        "access_token_secret": "xxxxxxxxxxxxx"
+    },
+    {
+        "title": "account3",
+        "consumer_key": "xxxxxxxxxxxxx",
+        "consumer_secret": "xxxxxxxxxxxxx",
+        "access_token_key": "xxxxxxxxxxxxx",
+        "access_token_secret": "xxxxxxxxxxxxx"
+    }
+]
