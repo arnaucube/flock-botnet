@@ -16,12 +16,14 @@ func main() {
 	c.Purple("https://github.com/arnaucode/twFlock")
 	fmt.Println("version " + version)
 	fmt.Println("Reading flockConfig.json file")
-	flock := readConfigTokensAndConnect()
+	//flock := readConfigTokensAndConnect()
+	var flock Flock
 	fmt.Println("---------------")
 	newcommand := bufio.NewReader(os.Stdin)
 	fmt.Print("Please select command number")
 	options := `
 	1 - Tweet from flock of bots
+	2 - Markov
 	0 - Exit script
 option to select: `
 	for {
@@ -34,6 +36,11 @@ option to select: `
 		case "1":
 			fmt.Println("selected 1 - Tweet from flock of bots")
 			optionTweetFromFlock(flock)
+			break
+		case "2":
+			fmt.Println("selected 2 - Markov")
+			_ = markov.train("the", "text.txt")
+			//fmt.Println(text)
 			break
 		case "0":
 			fmt.Println("selected 0 - exit script")
