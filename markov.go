@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"strconv"
 	"strings"
 )
@@ -30,8 +31,7 @@ func addWordToStates(states []State, word string) ([]State, int) {
 			iState = i
 		}
 	}
-
-	if iState > 0 {
+	if iState >= 0 {
 		states[iState].Count++
 	} else {
 		var tempState State
@@ -40,33 +40,32 @@ func addWordToStates(states []State, word string) ([]State, int) {
 
 		states = append(states, tempState)
 		iState = len(states) - 1
+
 	}
-	//fmt.Println(iState)
 	return states, iState
 }
 
-func countWordsProb(words []string) {
+func calcMarkovStates(words []string) []State {
 	var states []State
-	totalWordsCount := 0
 	//count words
-	for i := 0; i < len(words); i++ {
+	for i := 0; i < len(words)-1; i++ {
 		var iState int
-		totalWordsCount++
 		states, iState = addWordToStates(states, words[i])
-		if iState != len(words)-1 {
-			states[iState].NextStates, _ = addWordToStates(states[iState].NextStates, words[iState+1])
+		if iState < len(words) {
+			states[iState].NextStates, _ = addWordToStates(states[iState].NextStates, words[i+1])
 		}
 	}
 
 	//count prob
 	for i := 0; i < len(states); i++ {
-		states[i].Prob = (float64(states[i].Count) / float64(totalWordsCount) * 100)
+		states[i].Prob = (float64(states[i].Count) / float64(len(words)) * 100)
 		for j := 0; j < len(states[i].NextStates); j++ {
-			states[i].NextStates[j].Prob = (float64(states[i].NextStates[j].Count) / float64(totalWordsCount) * 100)
+			states[i].NextStates[j].Prob = (float64(states[i].NextStates[j].Count) / float64(len(words)) * 100)
 		}
 	}
-	fmt.Println("totalWordsCount: " + strconv.Itoa(totalWordsCount))
-	fmt.Println(states)
+	fmt.Println("total words: " + strconv.Itoa(len(words)))
+	//fmt.Println(states)
+	return states
 }
 
 func textToWords(text string) []string {
@@ -84,9 +83,34 @@ func readText(path string) (string, error) {
 	return content, err
 }
 
-func (markov Markov) train(firstWord string, path string) string {
+func (markov Markov) train(firstWord string, path string) []State {
 	text, _ := readText(path)
 	words := textToWords(text)
-	countWordsProb(words)
-	return text
+	states := calcMarkovStates(words)
+	//fmt.Println(states)
+
+	return states
+}
+
+func getNextMarkovState(states []State, word string) string {
+	iState := -1
+	for i := 0; i < len(states); i++ {
+		if states[i].Word == word {
+			iState = i
+		}
+	}
+	if iState < 0 {
+		return "word no exist on the memory"
+	}
+	fmt.Println(rand.Float64())
+	return word
+}
+func (markov Markov) generateText(states []State, initWord string, count int) string {
+	var generatedText []string
+	word := initWord
+	for i := 0; i < count; i++ {
+		word = getNextMarkovState(states, word)
+		generatedText = append(generatedText, word)
+	}
+	return "a"
 }

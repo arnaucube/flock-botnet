@@ -39,7 +39,9 @@ option to select: `
 			break
 		case "2":
 			fmt.Println("selected 2 - Markov")
-			_ = markov.train("the", "text.txt")
+			states := markov.train("the", "text.txt")
+			generatedText := markov.generateText(states, "Argus", 20)
+			c.Green(generatedText)
 			//fmt.Println(text)
 			break
 		case "0":
