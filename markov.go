@@ -63,7 +63,7 @@ func calcMarkovStates(words []string) []State {
 			states[i].NextStates[j].Prob = (float64(states[i].NextStates[j].Count) / float64(len(words)) * 100)
 		}
 	}
-	fmt.Println("total words: " + strconv.Itoa(len(words)))
+	fmt.Println("total words computed: " + strconv.Itoa(len(words)))
 	//fmt.Println(states)
 	return states
 }
@@ -79,7 +79,8 @@ func readText(path string) (string, error) {
 	if err != nil {
 		//Do something
 	}
-	content := string(data)
+	dataClean := strings.Replace(string(data), "\n", " ", -1)
+	content := string(dataClean)
 	return content, err
 }
 
@@ -102,15 +103,25 @@ func getNextMarkovState(states []State, word string) string {
 	if iState < 0 {
 		return "word no exist on the memory"
 	}
-	fmt.Println(rand.Float64())
-	return word
+	var next State
+	next = states[iState].NextStates[0]
+	next.Prob = rand.Float64() * states[iState].Prob
+	for i := 0; i < len(states[iState].NextStates); i++ {
+		if (rand.Float64()*states[iState].NextStates[i].Prob) > next.Prob && states[iState-1].Word != states[iState].NextStates[i].Word {
+			next = states[iState].NextStates[i]
+		}
+	}
+	return next.Word
 }
 func (markov Markov) generateText(states []State, initWord string, count int) string {
 	var generatedText []string
 	word := initWord
+	generatedText = append(generatedText, word)
 	for i := 0; i < count; i++ {
 		word = getNextMarkovState(states, word)
 		generatedText = append(generatedText, word)
 	}
-	return "a"
+	generatedText = append(generatedText, ".")
+	text := strings.Join(generatedText, " ")
+	return text
 }
