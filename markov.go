@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -10,11 +9,6 @@ import (
 
 type Markov struct{}
 
-/*type NextState struct {
-	Word  string
-	Count int
-	Prob  float64
-}*/
 type State struct {
 	Word       string
 	Count      int
@@ -23,6 +17,17 @@ type State struct {
 }
 
 var markov Markov
+
+func printLoading(n int, total int) {
+	var bar []string
+	tantPerFourty := int((float64(n) / float64(total)) * 40)
+	tantPerCent := int((float64(n) / float64(total)) * 100)
+	for i := 0; i < tantPerFourty; i++ {
+		bar = append(bar, "█")
+	}
+	progressBar := strings.Join(bar, "")
+	fmt.Printf("\r " + progressBar + " - " + strconv.Itoa(tantPerCent) + "%")
+}
 
 func addWordToStates(states []State, word string) ([]State, int) {
 	iState := -1
@@ -54,6 +59,8 @@ func calcMarkovStates(words []string) []State {
 		if iState < len(words) {
 			states[iState].NextStates, _ = addWordToStates(states[iState].NextStates, words[i+1])
 		}
+
+		printLoading(i, len(words))
 	}
 
 	//count prob
@@ -74,18 +81,8 @@ func textToWords(text string) []string {
 	return words
 }
 
-func readText(path string) (string, error) {
-	data, err := ioutil.ReadFile(path)
-	if err != nil {
-		//Do something
-	}
-	dataClean := strings.Replace(string(data), "\n", " ", -1)
-	content := string(dataClean)
-	return content, err
-}
+func (markov Markov) train(text string) []State {
 
-func (markov Markov) train(firstWord string, path string) []State {
-	text, _ := readText(path)
 	words := textToWords(text)
 	states := calcMarkovStates(words)
 	//fmt.Println(states)
