@@ -11,11 +11,18 @@ import (
 	"github.com/dghubble/go-twitter/twitter"
 )
 
-func isRT(text string) bool {
-	tweetWords := strings.Split(text, " ")
+func isRT(tweet *twitter.Tweet) bool {
+	tweetWords := strings.Split(tweet.Text, " ")
 	for i := 0; i < len(tweetWords); i++ {
 		if tweetWords[i] == "RT" {
-			c.Red(text)
+			return true
+		}
+	}
+	return false
+}
+func isFromBot(flock Flock, tweet *twitter.Tweet) bool {
+	for i := 0; i < len(flock.ScreenNames); i++ {
+		if flock.ScreenNames[i] == tweet.User.ScreenName {
 			return true
 		}
 	}
@@ -40,11 +47,11 @@ func processTweet(states []State, flockUser *twitter.Client, botScreenName strin
 	replyTweet(flockUser, "@"+tweet.User.ScreenName+" "+generatedText, tweet.ID)
 	waitTime(1)
 }
-func startStreaming(states []State, flockUser *twitter.Client, botScreenName string, keywords []string) {
+func startStreaming(states []State, flock Flock, flockUser *twitter.Client, botScreenName string, keywords []string) {
 	// Convenience Demux demultiplexed stream messages
 	demux := twitter.NewSwitchDemux()
 	demux.Tweet = func(tweet *twitter.Tweet) {
-		if isRT(tweet.Text) == false {
+		if isRT(tweet) == false && isFromBot(flock, tweet) == false {
 			processTweet(states, flockUser, botScreenName, keywords, tweet)
 		}
 	}
@@ -101,7 +108,8 @@ func optionMarkovFlockBotnet(flock Flock) {
 	case "y":
 		fmt.Println("ok, you are sure")
 		for i := 0; i < len(flock.Clients); i++ {
-			go startStreaming(states, flock.Clients[i], flock.ScreenNames[i], keywords)
+			go startStreaming(states, flock, flock.Clients[i], flock.ScreenNames[i], keywords)
+			waitSeconds(35)
 		}
 		break
 	default:
