@@ -10,10 +10,10 @@ import (
 const version = "0.1-dev"
 
 func main() {
-	c.Yellow("projectFlock")
+	c.Yellow("flock-botnet")
 	fmt.Println("---------------")
-	c.Cyan("projectFlock initialized")
-	c.Purple("https://github.com/arnaucode/projectFlock")
+	c.Cyan("flock-botnet initialized")
+	c.Purple("https://github.com/arnaucode/flock-botnet")
 	fmt.Println("version " + version)
 	fmt.Println("Reading flockConfig.json file")
 	flock := readConfigTokensAndConnect()
