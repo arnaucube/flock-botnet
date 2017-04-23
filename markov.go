@@ -26,7 +26,7 @@ func printLoading(n int, total int) {
 		bar = append(bar, "█")
 	}
 	progressBar := strings.Join(bar, "")
-	fmt.Printf("\r " + progressBar + " - " + strconv.Itoa(tantPerCent) + "%")
+	fmt.Printf("\r " + progressBar + " - " + strconv.Itoa(tantPerCent) + "")
 }
 
 func addWordToStates(states []State, word string) ([]State, int) {
@@ -70,7 +70,7 @@ func calcMarkovStates(words []string) []State {
 			states[i].NextStates[j].Prob = (float64(states[i].NextStates[j].Count) / float64(len(words)) * 100)
 		}
 	}
-	fmt.Println("total words computed: " + strconv.Itoa(len(words)))
+	fmt.Println("\ntotal words computed: " + strconv.Itoa(len(words)))
 	//fmt.Println(states)
 	return states
 }
@@ -116,9 +116,12 @@ func (markov Markov) generateText(states []State, initWord string, count int) st
 	generatedText = append(generatedText, word)
 	for i := 0; i < count; i++ {
 		word = getNextMarkovState(states, word)
+		if word == "word no exist on the memory" {
+			return "word no exist on the memory"
+		}
 		generatedText = append(generatedText, word)
 	}
-	generatedText = append(generatedText, ".")
+	//generatedText = append(generatedText, ".")
 	text := strings.Join(generatedText, " ")
 	return text
 }
